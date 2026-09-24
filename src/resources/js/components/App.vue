@@ -6,6 +6,9 @@
     <button @click="increment" class="btn btn-success">
       Count: {{ count }}
     </button>
+    <button @click="showOwn" class="btn btn-success">
+        Change msg
+    </button>
   </div>
 </template>
 
@@ -13,12 +16,16 @@
 import { ref } from 'vue';
 
 // State Variable
-const message = ref('Hello World from Vue 3!');
+const message = ref('Hello World from Abdul!');
 const count = ref(0);
 
 // Function
 function increment() {
   count.value++;
+}
+function showOwn()
+{
+    message.value= 'Aapka naya message yahan aagaya!';
 }
 </script>
 
