@@ -1,0 +1,56 @@
+services:
+  # 1. Laravel App + Node/Vue Build Container
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: vue_laravel_app
+    restart: unless-stopped
+    ports:
+      - "8000:80"     # Laravel API / App Port
+      - "5173:5173"   # Vite / Vue Hot Reload Port
+    dns:                  # <--- Yeh DNS section add karein
+      - 8.8.8.8
+      - 1.1.1.1
+    volumes:
+      - ./src:/var/www/html
+    networks:
+      - app_net
+
+  # 2. MySQL Database Container
+  db:
+    image: mysql:latest
+    container_name: vue_laravel_db
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: app_db
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_USER: app_user
+      MYSQL_PASSWORD: userpassword
+    volumes:
+      - dbdata:/var/lib/mysql
+    networks:
+      - app_net
+
+  # 3. phpMyAdmin Database GUI Container
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: vue_laravel_phpmyadmin
+    restart: unless-stopped
+    ports:
+      - "8888:80"
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: rootpassword
+    networks:
+      - app_net
+
+networks:
+  app_net:
+    driver: bridge
+
+volumes:
+  dbdata:
+    driver: local
