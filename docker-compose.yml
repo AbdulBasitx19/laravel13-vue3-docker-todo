@@ -1,5 +1,5 @@
 services:
-  # 1. Laravel App + Node/Vue Build Container
+  # Container 1: Web Application (Laravel + Apache Backend)
   app:
     build:
       context: .
@@ -7,9 +7,8 @@ services:
     container_name: vue_laravel_app
     restart: unless-stopped
     ports:
-      - "8000:80"     # Laravel API / App Port
-      - "5173:5173"   # Vite / Vue Hot Reload Port
-    dns:                  # <--- Yeh DNS section add karein
+      - "8000:80"
+    dns:
       - 8.8.8.8
       - 1.1.1.1
     volumes:
@@ -17,7 +16,22 @@ services:
     networks:
       - app_net
 
-  # 2. MySQL Database Container
+  # Container 2: Vue Frontend (Vite Dev Server - Separate Container)
+  vue-dev:
+    image: node:20-alpine
+    container_name: vue_laravel_vue
+    working_dir: /var/www/html
+    volumes:
+      - ./src:/var/www/html
+    ports:
+      - "5173:5173"
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    depends_on:
+      - app
+    networks:
+      - app_net
+
+  # Container 3: MySQL Database
   db:
     image: mysql:latest
     container_name: vue_laravel_db
@@ -34,7 +48,7 @@ services:
     networks:
       - app_net
 
-  # 3. phpMyAdmin Database GUI Container
+  # Container 4: Database GUI phpMyAdmin
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:latest
     container_name: vue_laravel_phpmyadmin
@@ -54,3 +68,4 @@ networks:
 volumes:
   dbdata:
     driver: local
+    

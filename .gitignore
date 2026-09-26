@@ -1,0 +1,8 @@
+src/vendor/
+src/node_modules/
+src/public/build/
+src/public/storage
+src/.env
+src/.phpunit.result.cache
+.DS_Store
+Thumbs.db
